@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const zlib = require("zlib"); // For decompression
+const crypto = require('crypto');
 
 // Uncomment this block to pass the first stage
 const command = process.argv[2];
@@ -18,6 +19,17 @@ switch (command) {
         throw new Error("Usage: cat-file -p <object-hash>");
       }
       break;
+    case "hash-object":
+        if(option === '-w' && hash){
+            hashObject(hash,true)
+        }
+        else if(hash){
+            hashObject(hash,false)
+        }
+        else{
+            throw new Error("Usage: hash-object [-w] <file-name>");
+        }
+        break;
     default:
       throw new Error(`Unknown command ${command}`);
   }
@@ -61,3 +73,51 @@ function readBlob(hash) {
       console.error(`Error reading blob: ${error.message}`);
     }
   }
+
+// Function to create a blob and optionally store it
+function hashObject(filePath, write) {
+    try {
+        // Step 1: Read file content
+        const content = fs.readFileSync(filePath);
+        const size = content.length;
+
+        // Step 2: Create the blob header (blob <size>\0)
+        const header = `blob ${size}\0`;
+
+        // Step 3: Combine header and file content
+        const blob = Buffer.concat([Buffer.from(header), content]);
+
+        // Step 4: Compute the SHA-1 hash of the combined header and content
+        const hash = crypto.createHash('sha1').update(blob).digest('hex');
+
+        // Step 5: Print the hash to the console
+        console.log(hash);
+
+        // Step 6: If the '-w' option is provided, write the blob to .git/objects
+        if (write) {
+            writeBlob(hash, blob);
+        }
+    } catch (error) {
+        console.error(`Error processing file: ${error.message}`);
+    }
+}
+
+// Function to write the blob to the .git/objects directory
+function writeBlob(hash, blob) {
+    // Step 1: Compress the blob using zlib
+    zlib.deflate(blob, (err, compressedBlob) => {
+        if (err) throw err;
+
+        // Step 2: Create the path to the object file in .git/objects
+        const dir = path.join('.git', 'objects', hash.substring(0, 2));
+        const file = path.join(dir, hash.substring(2));
+
+        // Step 3: Ensure the directory exists
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+
+        // Step 4: Write the compressed blob to the file
+        fs.writeFileSync(file, compressedBlob);
+    });
+}
