@@ -36,6 +36,7 @@ switch (command) {
         }else{
             throw new Error("Usage: ls-tree --name-only <tree_sha>");
         }
+        break;
     default:
       throw new Error(`Unknown command ${command}`);
   }
