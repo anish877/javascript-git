@@ -32,7 +32,9 @@ switch (command) {
         break;
     case "ls-tree":
         if(option=="--name-only" && option2){
-            lsTree(option2)
+            lsTree(option2,true)
+        }else if(option2){
+            lsTree(option2,false)
         }else{
             throw new Error("Usage: ls-tree --name-only <tree_sha>");
         }
@@ -129,7 +131,7 @@ function writeBlob(hash, blob) {
     });
 }
 
-function lsTree(treeSha) {
+function lsTree(treeSha,onlyName) {
     const dir = treeSha.substring(0, 2);
     const file = treeSha.substring(2);
     const objectPath = path.join(".git", "objects", dir, file);
@@ -137,13 +139,13 @@ function lsTree(treeSha) {
     try {
       const compressedData = fs.readFileSync(objectPath);
       const decompressedData = zlib.inflateSync(compressedData);
-      parseTree(decompressedData);
+      parseTree(decompressedData,onlyName);
     } catch (error) {
       console.error(`Error reading tree object: ${error.message}`);
     }
   }
 
-function parseTree(data) {
+function parseTree(data,onlyName) {
     // Find the null byte after the header
     const nullByteIndex = data.indexOf(0);
     
@@ -158,11 +160,17 @@ function parseTree(data) {
       // Extract the name
       const nameEndIndex = data.indexOf(0, modeEndIndex + 1); // 0 is null byte
       const name = data.slice(modeEndIndex + 1, nameEndIndex).toString();
-  
+      
+      const hash = data.slice(nameEndIndex+1,nameEndIndex+20+1).toString();
       // Move the index past the name and the SHA (20 bytes)
       currentIndex = nameEndIndex + 1 + 20; // 20 bytes for the SHA
-  
-      // Output the name (for --name-only flag)
-      console.log(name);
+      
+      if(onlyName){
+        // Output the name (for --name-only flag)
+        console.log(name);
+      }
+      else{
+        console.log(mode,name,hash)
+      }
     }
   }
