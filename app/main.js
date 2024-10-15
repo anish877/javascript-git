@@ -188,7 +188,7 @@ function parseTree(data,onlyName) {
      entries.forEach(entry=>{
         const fullPath = path.join(dirPath,entry)
         const  stats  = fs.statSync(fullPath)
-        if(stats.isFile){
+        if(stats.isFile()){
             const content = fs.readFileSync(fullPath)
             const size = content.length
             const header = `blob ${size}\0`
