@@ -5,8 +5,11 @@ const crypto = require('crypto');
 
 // Uncomment this block to pass the first stage
 const command = process.argv[2];
-const option = process.argv[3];  // e.g., '-p' in 'cat-file -p'
+const option  = process.argv[3];  // e.g., '-p' in 'cat-file -p'
 const option2 = process.argv[4];    // The hash (e.g., e88f7a929cd70b0274c4ea33b209c97fa845fdbc)
+const option3 = process.argv[5];
+const option4 = process.argv[6];
+const option5 = process.argv[7];
 
 switch (command) {
     case "init":
@@ -42,10 +45,29 @@ switch (command) {
     case "write-tree":
         writeTreeCommand()
     break;
+    case "commit-tree":
+        if(option2=='-p' && option3){
+            if(option && option4 == '-m' && option5){
+                commitTree(option,option3,option5)
+            }
+            else{
+                throw new Error(`Unknown command ${command}`);
+            }
+        }
+        else if(option && option4 == '-m' && option5){
+            commitTree(option,null,option5)
+        }
+        else{
+            throw new Error(`Unknown command ${command}`);
+        }
+    case "show":
+        showTree()
     default:
       throw new Error(`Unknown command ${command}`);
   }
- 
+
+  var latestCommitObject = null
+
   function sha1HashConverter(data){
     return crypto.createHash('sha1').update(data).digest('hex')
   }
@@ -222,4 +244,33 @@ function parseTree(data,onlyName) {
     const rootdir = process.cwd()
     const treeHash = writeTree(rootdir)
     process.stdout(treeHash)
+  }
+
+  function commitTree(treeHash,parentHash=null,message){
+    const tree = `tree ${treeHash}`
+    let parent
+    if(parentHash){
+        parent = `parent ${parentHash}`
+    }
+    const author_name = "ACoolName"
+    const author_email = "ACoolEmail@NotGmail.Com"
+    const author_date_seconds  = (new Date).getSeconds()
+    const author_date_timezone = (new Date).getTimezoneOffset()
+    const author = `author ${author_name} ${author_email} ${author_date_seconds} ${author_date_timezone}`
+    const commiter = `commiter ${author_name} ${author_email} ${author_date_seconds} ${author_date_timezone}`
+    const content = Buffer.concat([Buffer.from(tree),(parentHash)?Buffer.from(parent):null,author,commiter,message])
+    const header = `commit ${content.length}\0`
+    const final = Buffer.concat([header,content])
+    const hash = sha1HashConverter(final)
+    writeBlob(hash,final)
+    latestCommitObject = hash
+  }
+
+  function showTree(){
+    if(!latestCommitObject){
+        throw new Error('No commits made')
+    }
+    else{
+        readBlob(latestCommitObject)
+    }
   }
