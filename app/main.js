@@ -39,10 +39,16 @@ switch (command) {
             throw new Error("Usage: ls-tree --name-only <tree_sha>");
         }
         break;
+    case "write-tree":
+        writeTreeCommand()
+    break;
     default:
       throw new Error(`Unknown command ${command}`);
   }
-  
+ 
+  function sha1HashConverter(data){
+    return crypto.createHash('sha1').update(data).digest('hex')
+  }
 
 function createGitDirectory() {
   fs.mkdirSync(path.join(process.cwd(), ".git"), { recursive: true });
@@ -173,4 +179,43 @@ function parseTree(data,onlyName) {
         console.log(mode,name,hash)
       }
     }
+  }
+
+  function writeTree(dirPath){
+     let entries = fs.readdirSync(dirPath)
+     let treeEntries = []
+     entries.forEach(entry=>{
+        const fullPath = path.join(dirPath,entry)
+        const  stats  = fs.statSync(fullPath)
+        if(stats.isFile){
+            const content = fs.readFileSync(fullPath)
+            const size = content.length
+            const header = `blob ${size}\0`
+            const blob = Buffer.concat([Buffer.from(header),content])
+            const hash = sha1HashConverter(blob)
+            writeBlob(hash,blob)
+            const mode = 100644
+            const final = `${mode} ${entry}\0${hash}`
+            treeEntries.push(final)
+        }
+        else{
+            const finalhashoutput = writeTree(fullPath)
+            const directoryMode  = 40000
+            const directoryfinal = `${directoryMode} ${entry}\0${Buffer.from(finalhashoutput,'hex')}`
+            treeEntries.push(directoryfinal)
+        }
+     })
+    const bufferTree = Buffer.concat(treeEntries.map(entry=>Buffer.from(entry,'binary')))
+    const headerFinal = `tree ${bufferTree.size}\0`
+    const finalEntry = Buffer.concat([Buffer.from(headerFinal,'binary'),bufferTree])
+    const finalHash = sha1HashConverter(finalEntry)
+    writeBlob(finalHash,finalEntry)
+
+    return finalHash
+  }
+
+  function writeTreeCommand(){
+    const rootdir = process.cwd()
+    const treeHash = writeTree(rootdir)
+    console.log(treeHash)
   }
