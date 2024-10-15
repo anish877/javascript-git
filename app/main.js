@@ -260,7 +260,7 @@ function parseTree(data,onlyName) {
     const commiter = `commiter ${author_name} ${author_email} ${author_date_seconds} ${author_date_timezone}`
     const content = Buffer.concat([Buffer.from(tree),(parentHash)?Buffer.from(parent):null,Buffer.from(author),Buffer.from(commiter),Buffer.from(message)])
     const header = `commit ${content.length}\0`
-    const final = Buffer.concat([header,content])
+    const final = Buffer.concat([Buffer.from(header),Buffer.from(content)])
     const hash = sha1HashConverter(final)
     writeBlob(hash,final)
     latestCommitObject = hash
