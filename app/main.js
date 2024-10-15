@@ -192,18 +192,20 @@ function parseTree(data,onlyName) {
         if(stats.isFile()){
             const content = fs.readFileSync(fullPath)
             const header = `blob ${content.length}\0`
-            const blob = header + content
+            const blob = Buffer.concat([Buffer.from(header), content]);
             const hash = sha1HashConverter(blob)
             writeBlob(hash,blob)
             const mode = '100644'
-            const final = `${mode} ${entry}\0${hash}`
-            treeEntries.push(final)
+            const final = `${mode} ${entry}\0`
+            const finalEntry = Buffer.concat([Buffer.from(final),Buffer.from(hash,'hex')])
+            treeEntries.push(finalEntry)
         }
         else{
             const finalhashoutput = writeTree(fullPath)
             const directoryMode  = '040000'
-            const directoryfinal = `${directoryMode} ${entry}\0${Buffer.from(finalhashoutput,'hex')}`
-            treeEntries.push(directoryfinal)
+            const directoryfinal = `${directoryMode} ${entry}\0`
+            const finaldirectoryfinal = Buffer.concat([Buffer.from(directoryfinal),Buffer.from(finalhashoutput,'hex')])
+            treeEntries.push(finaldirectoryfinal)
         }
      })
     const bufferTree = Buffer.concat(treeEntries.map(entry=>Buffer.from(entry,'binary')))
