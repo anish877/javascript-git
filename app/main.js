@@ -206,6 +206,7 @@ function parseTree(data,onlyName) {
             const directoryfinal = `${directoryMode} ${entry}\0`
             const finaldirectoryfinal = Buffer.concat([Buffer.from(directoryfinal),Buffer.from(finalhashoutput,'hex')])
             treeEntries.push(finaldirectoryfinal)
+            
         }
      })
     const bufferTree = Buffer.concat(treeEntries.map(entry=>Buffer.from(entry,'binary')))
