@@ -221,5 +221,5 @@ function parseTree(data,onlyName) {
   function writeTreeCommand(){
     const rootdir = process.cwd()
     const treeHash = writeTree(rootdir)
-    console.log(treeHash)
+    process.stdout(treeHash)
   }
