@@ -207,7 +207,7 @@ function parseTree(data,onlyName) {
         }
      })
     const bufferTree = Buffer.concat(treeEntries.map(entry=>Buffer.from(entry,'binary')))
-    const headerFinal = `tree ${bufferTree.size}\0`
+    const headerFinal = `tree ${bufferTree.length}\0`
     const finalEntry = Buffer.concat([Buffer.from(headerFinal,'binary'),bufferTree])
     const finalHash = sha1HashConverter(finalEntry)
     writeBlob(finalHash,finalEntry)
