@@ -60,8 +60,10 @@ switch (command) {
         else{
             throw new Error(`Unknown command ${command}`);
         }
+        break;
     case "show":
         showTree()
+        break;
     default:
       throw new Error(`Unknown command ${command}`);
   }
