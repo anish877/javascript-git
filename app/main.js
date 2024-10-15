@@ -258,7 +258,7 @@ function parseTree(data,onlyName) {
     const author_date_timezone = (new Date).getTimezoneOffset()
     const author = `author ${author_name} ${author_email} ${author_date_seconds} ${author_date_timezone}`
     const commiter = `commiter ${author_name} ${author_email} ${author_date_seconds} ${author_date_timezone}`
-    const content = Buffer.concat([Buffer.from(tree),(parentHash)?Buffer.from(parent):null,author,commiter,message])
+    const content = Buffer.concat([Buffer.from(tree),(parentHash)?Buffer.from(parent):null,Buffer.from(author),Buffer.from(commiter),Buffer.from(message)])
     const header = `commit ${content.length}\0`
     const final = Buffer.concat([header,content])
     const hash = sha1HashConverter(final)
