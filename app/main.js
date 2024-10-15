@@ -266,7 +266,7 @@ function parseTree(data,onlyName) {
     const hash = sha1HashConverter(final)
     writeBlob(hash,final)
     latestCommitObject = hash
-    process.stdout(hash)
+    console.log(hash)
   }
 
   function showTree(){
