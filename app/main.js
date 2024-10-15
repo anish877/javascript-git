@@ -192,7 +192,7 @@ function parseTree(data,onlyName) {
         if(stats.isFile()){
             const content = fs.readFileSync(fullPath)
             const header = `blob ${content.length}\0`
-            const blob = Buffer.concat([Buffer.from(header), content]);
+            const blob = Buffer.concat([Buffer.from(header), Buffer.from(content,'hex')]);
             const hash = sha1HashConverter(blob)
             writeBlob(hash,blob)
             const mode = '100644'
