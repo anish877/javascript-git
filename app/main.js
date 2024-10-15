@@ -202,7 +202,7 @@ function parseTree(data,onlyName) {
         }
         else{
             const finalhashoutput = writeTree(fullPath)
-            const directoryMode  = '040000'
+            const directoryMode  = '40000'
             const directoryfinal = `${directoryMode} ${entry}\0`
             const finaldirectoryfinal = Buffer.concat([Buffer.from(directoryfinal),Buffer.from(finalhashoutput,'hex')])
             treeEntries.push(finaldirectoryfinal)
