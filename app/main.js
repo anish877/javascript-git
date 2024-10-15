@@ -182,6 +182,7 @@ function parseTree(data,onlyName) {
   }
 
   function writeTree(dirPath){
+    // dngn
      let entries = fs.readdirSync(dirPath)
      let treeEntries = []
      entries.forEach(entry=>{
