@@ -144,7 +144,7 @@ function lsTree(treeSha,onlyName) {
   
     try {
       const compressedData = fs.readFileSync(objectPath);
-      const decompressedData = zlib.inflateSync(compressedData);
+      const decompressedData = zlib.inflateSync(compressedData)
       parseTree(decompressedData,onlyName);
     } catch (error) {
       console.error(`Error reading tree object: ${error.message}`);
