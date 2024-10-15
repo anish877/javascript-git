@@ -191,18 +191,17 @@ function parseTree(data,onlyName) {
         if(entry==='.git') return
         if(stats.isFile()){
             const content = fs.readFileSync(fullPath)
-            const size = content.length
-            const header = `blob ${size}\0`
+            const header = `blob ${content.length}\0`
             const blob = header + content
             const hash = sha1HashConverter(blob)
             writeBlob(hash,blob)
-            const mode = 100644
+            const mode = '100644'
             const final = `${mode} ${entry}\0${hash}`
             treeEntries.push(final)
         }
         else{
             const finalhashoutput = writeTree(fullPath)
-            const directoryMode  = 40000
+            const directoryMode  = '040000'
             const directoryfinal = `${directoryMode} ${entry}\0${Buffer.from(finalhashoutput,'hex')}`
             treeEntries.push(directoryfinal)
         }
