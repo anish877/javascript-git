@@ -206,12 +206,12 @@ function parseTree(data,onlyName) {
             const directoryfinal = `${directoryMode} ${entry}\0`
             const finaldirectoryfinal = Buffer.concat([Buffer.from(directoryfinal),Buffer.from(finalhashoutput,'hex')])
             treeEntries.push(finaldirectoryfinal)
-            
+
         }
      })
     const bufferTree = Buffer.concat(treeEntries.map(entry=>Buffer.from(entry,'binary')))
-    const headerFinal = `tree ${bufferTree.length}\0`
-    const finalEntry = Buffer.concat([Buffer.from(headerFinal,'binary'),bufferTree])
+    const header = `tree ${bufferTree.length}\0`; // Correct size calculation
+    const finalEntry = Buffer.concat([Buffer.from(header,'binary'),bufferTree])
     const finalHash = sha1HashConverter(finalEntry)
     writeBlob(finalHash,finalEntry)
 
