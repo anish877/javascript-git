@@ -241,7 +241,7 @@ function parseTree(data,onlyName) {
     process.stdout(treeHash)
   }
 
-  function commitTree(treeHash,parentHash=null,message){
+  function commitTree(treeHash,parentHash,message){
     const tree = `tree ${treeHash}`
     let parent
     if(parentHash){
