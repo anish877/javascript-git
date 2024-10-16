@@ -241,25 +241,56 @@ function parseTree(data,onlyName) {
   }
 
   function commitTree(treeHash,parentHash,message){
-    const tree = `tree ${treeHash}`
-    let content =''
-    let parent
-    if(parentHash){
-        parent = `parent ${parentHash}`
-    }
-    const author_name = "ACoolName"
-    const author_email = "ACoolEmail@NotGmail.Com"
-    const author_date_seconds  = (new Date).getSeconds()
-    const author_date_timezone = (new Date).getTimezoneOffset()
-    const author = `author ${author_name} ${author_email} ${author_date_seconds} ${author_date_timezone}`
-    const commiter = `commiter ${author_name} ${author_email} ${author_date_seconds} ${author_date_timezone}`
-    content.concat([tree+'\n',parentHash?parent+'\n':null,author+'\n',commiter+'\n',message])
-    const header = `commit ${content.length}\0`
-    const final = header+'\n' + content
-    const hash = sha1HashConverter(final)
-    writeBlob(hash,final)
-    latestCommitObject = hash
-    console.log(hash)
+  // Tree reference
+  const tree = `tree ${treeHash}`;
+  let parent = "";
+  if (parentHash) {
+    parent = `parent ${parentHash}`;
+  }
+  
+  // Author/Committer information
+  const authorName = "ACoolName";
+  const authorEmail = "ACoolEmail@NotGmail.Com";
+  
+  // Get current time as Unix timestamp in seconds
+  const timestampSeconds = Math.floor(Date.now() / 1000);
+  
+  // Get timezone in ±hhmm format
+  const timezoneOffset = -new Date().getTimezoneOffset();
+  const timezone = (timezoneOffset >= 0 ? "+" : "-") +
+                   String(Math.abs(Math.floor(timezoneOffset / 60))).padStart(2, "0") +
+                   String(Math.abs(timezoneOffset % 60)).padStart(2, "0");
+  
+  const author = `author ${authorName} <${authorEmail}> ${timestampSeconds} ${timezone}`;
+  const committer = `committer ${authorName} <${authorEmail}> ${timestampSeconds} ${timezone}`;
+  
+  // Commit message
+  const commitMessage = message;
+  
+  // Combine all parts to form the commit content
+  let commitContent = `${tree}\n`;
+  if (parent) {
+    commitContent += `${parent}\n`;
+  }
+  commitContent += `${author}\n${committer}\n\n${commitMessage}\n`;
+  
+  // Create the commit header
+  const header = `commit ${commitContent.length}\0`;
+  
+  // Final commit data (header + content)
+  const commitData = header + commitContent;
+  
+  // Hash the commit data
+  const commitHash = sha1HashConverter(commitData);
+  
+  // Write the commit object to .git/objects
+  writeBlob(commitHash, Buffer.from(commitData));
+  
+  // Store the latest commit object hash
+  latestCommitObject = commitHash;
+  
+  // Output the commit hash
+  console.log(commitHash);
 
   }
 
