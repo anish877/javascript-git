@@ -199,7 +199,6 @@ function parseTree(data,onlyName) {
   }
 
   function writeTree(dirPath){
-    // dngn
      let entries = fs.readdirSync(dirPath)
      let treeEntries = []
      entries.forEach(entry=>{
@@ -261,6 +260,7 @@ function parseTree(data,onlyName) {
     writeBlob(hash,final)
     latestCommitObject = hash
     console.log(hash)
+
   }
 
   function showTree(){
