@@ -16,7 +16,7 @@ switch (command) {
       createGitDirectory();
       break;
     case "cat-file":
-      if (option === '-p' && option2) {
+      if (option === "-p" && option2) {
         readBlob(option2);
       } else {
         throw new Error("Usage: cat-file -p <object-hash>");
@@ -46,20 +46,13 @@ switch (command) {
         writeTreeCommand()
     break;
     case "commit-tree":
-        if(option2=='-p' && option3){
-            if(option && option4 == '-m' && option5){
-                commitTree(option,option3,option5)
-            }
-            else{
-                throw new Error(`Unknown command ${command}`);
-            }
-        }
-        else if(option && option4 == '-m' && option5){
-            commitTree(option,null,option5)
-        }
-        else{
-            throw new Error(`Unknown command ${command}`);
-        }
+      if (option === "-p" && option2 && option4 === "-m" && option5) {
+        commitTree(option2, option3, option5);
+      } else if (option4 === "-m" && option5) {
+        commitTree(option, null, option5);
+      } else {
+        throw new Error(`Unknown command ${command}`);
+      }
         break;
     case "show":
         showTree()
