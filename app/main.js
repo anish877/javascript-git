@@ -21,6 +21,11 @@ switch (command) {
       } else {
         throw new Error("Usage: cat-file -p <object-hash>");
       }
+      if (option === 'commit' && option2) {
+        readBlob(option2);
+      } else {
+        throw new Error("Usage: cat-file commit <object-hash>");
+      }
       break;
     case "hash-object":
         if(option === '-w' && option2){
