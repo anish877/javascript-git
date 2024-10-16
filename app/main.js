@@ -240,59 +240,49 @@ function parseTree(data,onlyName) {
     process.stdout(treeHash)
   }
 
-  function commitTree(treeHash,parentHash,message){
-  // Tree reference
-  const tree = `tree ${treeHash}`;
-  let parent = "";
-  if (parentHash) {
-    parent = `parent ${parentHash}`;
-  }
-  
-  // Author/Committer information
-  const authorName = "ACoolName";
-  const authorEmail = "ACoolEmail@NotGmail.Com";
-  
-  // Get current time as Unix timestamp in seconds
-  const timestampSeconds = Math.floor(Date.now() / 1000);
-  
-  // Get timezone in ±hhmm format
-  const timezoneOffset = -new Date().getTimezoneOffset();
-  const timezone = (timezoneOffset >= 0 ? "+" : "-") +
-                   String(Math.abs(Math.floor(timezoneOffset / 60))).padStart(2, "0") +
-                   String(Math.abs(timezoneOffset % 60)).padStart(2, "0");
-  
-  const author = `author ${authorName} <${authorEmail}> ${timestampSeconds} ${timezone}`;
-  const committer = `committer ${authorName} <${authorEmail}> ${timestampSeconds} ${timezone}`;
-  
-  // Commit message
-  const commitMessage = message;
-  
-  // Combine all parts to form the commit content
-  let commitContent = `${tree}\n`;
-  if (parent) {
-    commitContent += `${parent}\n`;
-  }
-  commitContent += `${author}\n${committer}\n\n${commitMessage}\n`;
-  
-  // Create the commit header
-  const header = `commit ${commitContent.length}\0`;
-  
-  // Final commit data (header + content)
-  const commitData = header + commitContent;
-  
-  // Hash the commit data
-  const commitHash = sha1HashConverter(commitData);
-  
-  // Write the commit object to .git/objects
-  writeBlob(commitHash, Buffer.from(commitData));
-  
-  // Store the latest commit object hash
-  latestCommitObject = commitHash;
-  
-  // Output the commit hash
-  console.log(commitHash);
+  function commitTree(treeHash, parentHash, message) {
+    const tree = `tree ${treeHash}`;
+    let content = '';
 
-  }
+    // Add the parent hash if provided
+    if (parentHash) {
+        const parent = `parent ${parentHash}`;
+        content += `${parent}\n`;
+    }
+
+    // Get author/committer info
+    const author_name = "ACoolName";
+    const author_email = "ACoolEmail@NotGmail.Com";
+
+    // Get UNIX timestamp in seconds
+    const author_date_seconds  = Math.floor(Date.now() / 1000); // Full timestamp in seconds
+    const author_date_timezone = (new Date()).getTimezoneOffset() / 60; // Timezone in hours
+
+    // Author and committer strings
+    const author = `author ${author_name} <${author_email}> ${author_date_seconds} ${author_date_timezone}`;
+    const committer = `committer ${author_name} <${author_email}> ${author_date_seconds} ${author_date_timezone}`;
+
+    // Build the commit content
+    content = `${tree}\n${content}${author}\n${committer}\n\n${message}\n`;
+
+    // Add commit header
+    const header = `commit ${content.length}\0`;
+
+    // Final commit content
+    const final = header + content;
+
+    // Compute SHA-1 hash of the commit object
+    const hash = sha1HashConverter(final);
+
+    // Write the commit object to the Git objects store
+    writeBlob(hash, final);
+
+    // Store the latest commit SHA
+    latestCommitObject = hash;
+
+    // Output the commit SHA
+    console.log(hash);
+}
 
   function showTree(){
     if(!latestCommitObject){
