@@ -106,7 +106,7 @@ function readBlob(hash) {
     }
   }
 
-// Function to create a blob and optionally store it
+// Function to create a blob and optionally store i
 function hashObject(filePath, write) {
     try {
         // Step 1: Read file content
