@@ -60,9 +60,9 @@ switch (command) {
 
   var latestCommitObject = null
 
-  function sha1HashConverter(data){
-    return crypto.createHash('sha1').update(data).digest('hex')
-  }
+function sha1HashConverter(data){
+  return crypto.createHash('sha1').update(data).digest('hex')
+}
 
 function createGitDirectory() {
   fs.mkdirSync(path.join(process.cwd(), ".git"), { recursive: true });
@@ -247,7 +247,6 @@ function parseTree(data,onlyName) {
     const author = `author The Commiter <thecommitter@test.com> ${Date.now} +0000\n`
     const commiter = `commiter The Commiter <thecommitter@test.com> ${Date.now} +0000\n\n`
     const content = Buffer.concat([Buffer.from(tree),parentHash?Buffer.from(parent):null,Buffer.from(author),Buffer.from(commiter),Buffer.from(message+'\n')])
-    console.log(content)
     const header = `commit ${content.length}\0`
     const final = Buffer.concat([Buffer.from(header),content])
     const hash = sha1HashConverter(final)
