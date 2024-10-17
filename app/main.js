@@ -238,44 +238,41 @@ function parseTree(data,onlyName) {
   function writeTreeCommand(){
     const rootdir = process.cwd()
     const treeHash = writeTree(rootdir)
-    process.stdout(treeHash)
+    console.log(treeHash)
   }
 
   function commitTree(treeHash, parentHash, message) {
     const tree = `tree ${treeHash}\n`;
     let parent = '';
+    let content;
+
     if (parentHash) {
         parent = `parent ${parentHash}\n`;
     }
 
-    const timestamp = Math.floor(Date.now() / 1000);  // Correct timestamp
-    const author = `author The Commiter <thecommitter@test.com> ${timestamp} +0000\n`;
-    const committer = `committer The Commiter <thecommitter@test.com> ${timestamp} +0000\n\n`;
-    const commitMessage = `${message}\n`;
+    const author = `author The Commiter <thecommitter@test.com> ${Math.floor(Date.now() / 1000)} +0000\n`;
+    const committer = `committer The Commiter <thecommitter@test.com> ${Math.floor(Date.now() / 1000)} +0000\n\n`;
 
-    // Combine all components to form the commit object content
-    const content = `${tree}${parent}${author}${committer}${commitMessage}`;
+    // Concatenate commit data (tree, parent if available, author, committer, message)
+    content = Buffer.concat([
+        Buffer.from(tree),
+        Buffer.from(parent),
+        Buffer.from(author),
+        Buffer.from(committer),
+        Buffer.from(message + '\n')
+    ]);
 
-    // Prepend the commit header
-    const header = `commit ${Buffer.byteLength(content)}\0`;
-    const finalCommit = Buffer.concat([Buffer.from(header), Buffer.from(content)]);
+    const header = `commit ${content.length}\0`;
+    const final = Buffer.concat([Buffer.from(header), content]);
 
-    // Compute the commit hash
-    const commitHash = sha1HashConverter(finalCommit);
+    // Calculate SHA-1 hash of commit object
+    const hash = sha1HashConverter(final);
 
-    // Compress the commit data
-    const compressedData = zlib.deflateSync(finalCommit);
-
-    // Write the commit to the .git/objects directory
-    const dirPath = path.join(process.cwd(), '.git', 'objects', commitHash.slice(0, 2));
-    const filePath = path.join(dirPath, commitHash.slice(2));
-
-    // Ensure the directory exists
+    // Compress and write the commit object
+    const compressedData = zlib.deflateSync(final);
+    const dirPath = path.resolve(__dirname, '.git', 'objects', hash.slice(0, 2));
     fs.mkdirSync(dirPath, { recursive: true });
+    fs.writeFileSync(path.resolve(dirPath, hash.slice(2)), compressedData);
 
-    // Write the compressed commit object
-    fs.writeFileSync(filePath, compressedData);
-
-    // Output the commit hash
-    process.stdout.write(commitHash + '\n');
+    console.log(hash);  // Output the commit SHA
 }
