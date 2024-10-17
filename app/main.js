@@ -263,7 +263,7 @@ function parseTree(data,onlyName) {
     ]);
 
     const header = `commit ${content.length}\0`;
-    const final = Buffer.concat([Buffer.from(header), content]);
+    const final = Buffer.concat([Buffer.from(header), Buffer.from(content,'hex')]);
 
     // Calculate SHA-1 hash of commit object
     const hash = sha1HashConverter(final);
