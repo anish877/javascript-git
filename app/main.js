@@ -54,9 +54,6 @@ switch (command) {
         throw new Error(`Unknown command ${command}`);
       }
         break;
-    case "show":
-        showTree()
-        break;
     default:
       throw new Error(`Unknown command ${command}`);
   }
@@ -258,15 +255,5 @@ function parseTree(data,onlyName) {
     const final = Buffer.concat([Buffer.from(header),content])
     const hash = sha1HashConverter(final)
     writeBlob(hash,final)
-    latestCommitObject = hash
     console.log(hash)
-  }
-
-  function showTree(){
-    if(!latestCommitObject){
-        throw new Error('No commits made')
-    }
-    else{
-        readBlob(latestCommitObject)
-    }
   }
