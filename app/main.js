@@ -18,6 +18,9 @@ switch (command) {
     case "cat-file":
       if (option === "-p" && option2) {
         readBlob(option2);
+      }
+      else if(option==="commit" && option2){
+        readBlob(option2);
       } else {
         throw new Error("Usage: cat-file -p <object-hash>");
       }
