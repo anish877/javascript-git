@@ -141,7 +141,7 @@ function writeBlob(hash, blob) {
         if (err) throw err;
 
         // Step 2: Create the path to the object file in .git/objects
-        const dir = path.join('.git', 'objects', hash.substring(0, 2));
+        const dir = path.join(process.cwd(),'.git', 'objects', hash.substring(0, 2));
         const file = path.join(dir, hash.substring(2));
 
         // Step 3: Ensure the directory exists
@@ -243,7 +243,6 @@ function parseTree(data,onlyName) {
 
   function commitTree(treeHash,parentHash,message){
     const tree = `tree ${treeHash}`
-    let content =''
     let parent
     if(parentHash){
         parent = `parent ${parentHash}`
@@ -254,9 +253,9 @@ function parseTree(data,onlyName) {
     const author_date_timezone = (new Date).getTimezoneOffset()
     const author = `author ${author_name} ${author_email} ${author_date_seconds} ${author_date_timezone}`
     const commiter = `commiter ${author_name} ${author_email} ${author_date_seconds} ${author_date_timezone}`
-    content.concat([tree+'\n',parentHash?parent+'\n':null,author+'\n',commiter+'\n',message])
+    const content = Buffer.concat([Buffer.from(tree),parentHash?Buffer.from(parent):null,Buffer.from(author),Buffer.from(commiter),Buffer.from(message)])
     const header = `commit ${content.length}\0`
-    const final = header+'\n' + content
+    const final = Buffer.concat([Buffer.from(header),content])
     const hash = sha1HashConverter(final)
     writeBlob(hash,final)
     latestCommitObject = hash
