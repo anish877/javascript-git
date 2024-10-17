@@ -48,8 +48,8 @@ switch (command) {
     case "commit-tree":
       if (option2 === "-p" && option3 && option4 === "-m" && option5) {
         commitTree(option2, option3, option5);
-      } else if (option4 === "-m" && option5) {
-        commitTree(option, null, option5);
+      } else if (option2 === "-m" && option3) {
+        commitTree(option, null, option3);
       } else {
         throw new Error(`Unknown command ${command}`);
       }
