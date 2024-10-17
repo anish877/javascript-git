@@ -260,7 +260,7 @@ function parseTree(data,onlyName) {
     const fileName = commitHash.slice(2);
     const commitDir = path.resolve(__dirname, '.git', 'objects', dir);
     
-    mkdirSync(commitDir, { recursive: true });
+    fs.mkdirSync(commitDir, { recursive: true });
     writeFileSync(path.resolve(commitDir, fileName), compressedCommit);
     
     process.stdout.write(commitHash);
