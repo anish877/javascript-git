@@ -239,18 +239,18 @@ function parseTree(data,onlyName) {
   }
 
   function commitTree(treeHash,parentHash,message){
-    const tree = `tree ${treeHash}`
+    const tree = `tree ${treeHash}\n`
     let parent
     if(parentHash){
-        parent = `parent ${parentHash}`
+        parent = `parent ${parentHash}\n`
     }
     const author_name = "ACoolName"
     const author_email = "ACoolEmail@NotGmail.Com"
     const author_date_seconds  = (new Date).getSeconds()
     const author_date_timezone = (new Date).getTimezoneOffset()
-    const author = `author ${author_name} ${author_email} ${author_date_seconds} ${author_date_timezone}`
-    const commiter = `commiter ${author_name} ${author_email} ${author_date_seconds} ${author_date_timezone}`
-    const content = Buffer.concat([Buffer.from(tree),parentHash?Buffer.from(parent):null,Buffer.from(author),Buffer.from(commiter),Buffer.from(message)])
+    const author = `author ${author_name} ${author_email} ${author_date_seconds} ${author_date_timezone}\n`
+    const commiter = `commiter ${author_name} ${author_email} ${author_date_seconds} ${author_date_timezone}\n\n`
+    const content = Buffer.concat([Buffer.from(tree),parentHash?Buffer.from(parent):null,Buffer.from(author),Buffer.from(commiter),Buffer.from(message+'\n')])
     const header = `commit ${content.length}\0`
     const final = Buffer.concat([Buffer.from(header),content])
     const hash = sha1HashConverter(final)
