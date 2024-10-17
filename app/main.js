@@ -248,8 +248,8 @@ function parseTree(data,onlyName) {
     const author_email = "ACoolEmail@NotGmail.Com"
     const author_date_seconds  = (new Date).getSeconds()
     const author_date_timezone = (new Date).getTimezoneOffset()
-    const author = `author ${author_name} ${author_email} ${author_date_seconds} ${author_date_timezone}\n`
-    const commiter = `commiter ${author_name} ${author_email} ${author_date_seconds} ${author_date_timezone}\n\n`
+    const author = `author The Commiter <thecommitter@test.com> ${Date.now} +0000\n`
+    const commiter = `commiter The Commiter <thecommitter@test.com> ${Date.now} +0000\n\n`
     const content = Buffer.concat([Buffer.from(tree),parentHash?Buffer.from(parent):null,Buffer.from(author),Buffer.from(commiter),Buffer.from(message+'\n')])
     const header = `commit ${content.length}\0`
     const final = Buffer.concat([Buffer.from(header),content])
