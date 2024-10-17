@@ -254,7 +254,7 @@ function parseTree(data,onlyName) {
     const header = `commit ${content.length}\0`
     const final = Buffer.concat([Buffer.from(header),content])
     const hash = sha1HashConverter(final)
-    const compressedData = zlib.deflate(final)
+    const compressedData = zlib.deflateSync(final)
     const dirPath = path.join(process.cwd(),'.git','object',hash.slice(0,2))
     const filePath = path.join(process.cwd(),'.git','object',hash.slice(2))
     fs.mkdirSync(dirPath,{recursive:true})
