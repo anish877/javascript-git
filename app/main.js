@@ -274,5 +274,5 @@ function parseTree(data,onlyName) {
     if(!fs.existsSync(dirPath)) { fs.mkdirSync(dirPath, { recursive: true });}
     fs.writeFileSync(path.join(dirPath, hash.slice(2)), compressedData);
 
-    console.log(hash);  // Output the commit SHA
+    console.log(hash);  // Output the commit SHa
 }
