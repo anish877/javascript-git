@@ -50,7 +50,7 @@ switch (command) {
     break;
     case "commit-tree":
       if (option2 === "-p" && option3 && option4 === "-m" && option5) {
-        commitTree(option2, option3, option5);
+        commitTree(option, option3, option5);
       } else if (option2 === "-m" && option3) {
         commitTree(option, null, option3);
       } else {
