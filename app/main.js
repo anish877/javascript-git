@@ -271,7 +271,7 @@ function parseTree(data,onlyName) {
     // Compress and write the commit object
     const compressedData = zlib.deflateSync(final);
     const dirPath = path.join(process.cwd(),'.git', 'objects', hash.slice(0, 2));
-    fs.mkdirSync(dirPath, { recursive: true });
+    if(!fs.existsSync(dirPath)) { fs.mkdirSync(dirPath, { recursive: true });}
     fs.writeFileSync(path.join(dirPath, hash.slice(2)), compressedData);
 
     console.log(hash);  // Output the commit SHA
